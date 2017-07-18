@@ -1,4 +1,7 @@
-import { Component, OnInit, AfterViewInit, ViewEncapsulation, ChangeDetectorRef, OnDestroy, forwardRef, ViewChild, ContentChildren, ElementRef, QueryList, Input } from '@angular/core';
+import {
+	Component, OnInit, AfterViewInit, ViewEncapsulation, ChangeDetectorRef, OnDestroy, forwardRef, ViewChild,
+	ContentChildren, ElementRef, QueryList, Input, Output, EventEmitter
+} from '@angular/core';
 
 import { SlideComponent } from '../slide/slide.component';
 import * as gestures from 'ui/gestures';
@@ -51,6 +54,27 @@ enum cancellationReason {
 			width:100%;
 			height:20%;
 		}
+		.slide-indicator-inactive {
+			background-color: #fff;
+			opacity: 0.4;
+			width: 10;
+			height: 10;
+			margin-left: 2.5;
+			margin-right: 2.5;
+			margin-top: -200;
+			border-radius: 5;
+		}
+		
+		.slide-indicator-active {
+			background-color: #fff;
+			opacity: 0.9;
+			width: 10;
+			height: 10;
+			margin-left: 2.5;
+			margin-right: 2.5;
+			margin-top: -200;
+			border-radius: 5;
+		}
 	`],
 	encapsulation: ViewEncapsulation.None
 })
@@ -63,6 +87,8 @@ export class SlidesComponent implements OnInit {
 	@Input('loop') loop: boolean;
 	@Input('pageIndicators') pageIndicators: boolean;
 	@Input('class') cssClass: string = '';
+
+	@Output() isLast = new EventEmitter<boolean>();
 
 	private transitioning: boolean;
 	private direction: direction = direction.none;
@@ -220,6 +246,13 @@ export class SlidesComponent implements OnInit {
 
 		if (this.pageIndicators) {
 			this.setActivePageIndicator(this.currentSlide.index);
+		}
+
+		if (!this.hasNext) {
+			this.isLast.emit(true);
+		}
+		else {
+			this.isLast.emit(false);
 		}
 	}
 
